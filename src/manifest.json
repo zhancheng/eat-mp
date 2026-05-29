@@ -1,0 +1,26 @@
+{
+  "name": "吃啥",
+  "appid": "wx311c513e886b1cf1",
+  "description": "附近外卖聚合 & 抽奖转盘",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "wx311c513e886b1cf1",
+    "cloud": true,
+    "cloudfunctionRoot": "cloudfunctions/",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true
+    },
+    "usingComponents": true,
+    "permission": {
+      "scope.userLocation": {
+        "desc": "用于获取附近外卖和餐厅推荐"
+      }
+    },
+    "requiredPrivateInfos": ["getLocation"]
+  },
+  "vueVersion": "3"
+}

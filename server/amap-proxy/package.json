@@ -1,0 +1,6 @@
+{
+  "name": "eat-mp-amap-proxy",
+  "private": true,
+  "scripts": { "start": "node index.js" },
+  "engines": { "node": ">=18" }
+}
