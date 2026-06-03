@@ -30,6 +30,7 @@ export interface WheelChallengeState {
   guestProfile: UserProfile | null
   hostSpin: WheelSpinResult | null
   guestSpin: WheelSpinResult | null
+  pendingSpin: WheelSpinResult | null
   winner: WheelChallengeWinner | null
   guestListSource: GuestListSource | null
   hostItemCount: number

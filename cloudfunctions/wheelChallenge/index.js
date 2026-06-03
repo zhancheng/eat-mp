@@ -82,6 +82,7 @@ async function formatChallenge(doc, openid) {
     guestProfile,
     hostSpin: doc.hostSpin || null,
     guestSpin: doc.guestSpin || null,
+    pendingSpin: doc.pendingHostSpin || doc.pendingGuestSpin || null,
     winner: doc.winner || null,
     guestListSource: doc.guestListSource || null,
     hostItemCount: (doc.hostItems || []).length,

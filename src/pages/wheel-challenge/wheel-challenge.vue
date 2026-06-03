@@ -214,7 +214,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onUnmounted } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { onLoad, onShow, onUnload, onShareAppMessage } from '@dcloudio/uni-app'
 import {
   createWheelChallenge,
@@ -249,6 +249,7 @@ const hostAvatarUrl = ref('')
 const guestAvatarUrl = ref('')
 let pollTimer: ReturnType<typeof setInterval> | null = null
 let pendingOwnList = false
+let observedSpinKey = ''
 
 // 发起者餐厅选择相关
 const allFavorites = ref<SavedRestaurant[]>([])
@@ -364,6 +365,9 @@ onLoad(async (opts) => {
     loading.value = false
   }
 
+  if (state.value) {
+    await playObservedSpin(state.value)
+  }
   startPolling()
 })
 
@@ -425,6 +429,17 @@ function avatarUrlKey(url: string): string {
   return raw.split('?')[0]
 }
 
+function getObservedSpinKey(next: WheelChallengeState): string {
+  if (!next.pendingSpin) return ''
+  if (next.status === 'host_spinning' && next.role !== 'host') {
+    return `host:${next.pendingSpin.index}:${next.wheelItems.length}`
+  }
+  if (next.status === 'guest_spinning' && next.role !== 'guest') {
+    return `guest:${next.pendingSpin.index}:${next.wheelItems.length}`
+  }
+  return ''
+}
+
 function shouldApplyPollUpdate(
   prev: WheelChallengeState | null,
   next: WheelChallengeState
@@ -437,6 +452,7 @@ function shouldApplyPollUpdate(
   if (prev.guestListSource !== next.guestListSource) return true
   if (prev.hostSpin?.index !== next.hostSpin?.index) return true
   if (prev.guestSpin?.index !== next.guestSpin?.index) return true
+  if (prev.pendingSpin?.index !== next.pendingSpin?.index) return true
   if (prev.wheelItems.length !== next.wheelItems.length) return true
   if (prev.hostProfile?.nickName !== next.hostProfile?.nickName) return true
   if (prev.guestProfile?.nickName !== next.guestProfile?.nickName) return true
@@ -475,6 +491,24 @@ async function applyState(next: WheelChallengeState) {
   }
 }
 
+async function playObservedSpin(next: WheelChallengeState) {
+  const key = getObservedSpinKey(next)
+  if (!key || observedSpinKey === key) return
+
+  await nextTick()
+  if (!wheelRef.value || !next.pendingSpin) return
+
+  observedSpinKey = key
+  spinning.value = true
+  try {
+    await wheelRef.value.spinToIndex(next.pendingSpin.index)
+  } finally {
+    spinning.value = false
+  }
+
+  await refreshState()
+}
+
 async function refreshState() {
   if (!challengeId.value || spinning.value) return
   try {
@@ -484,6 +518,7 @@ async function refreshState() {
       (!!next.guestProfile?.avatarUrl && !guestAvatarUrl.value)
     if (!needsAvatarRetry && !shouldApplyPollUpdate(state.value, next)) return
     await applyState(next)
+    await playObservedSpin(next)
   } catch {
     /* ignore poll errors */
   }
