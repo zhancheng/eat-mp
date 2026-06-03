@@ -282,11 +282,11 @@ export const LIST_META: Record<
   favorite: {
     title: '我的收藏',
     emptyTitle: '还没有收藏',
-    emptyHint: '在附近美食或详情页点击 ☆ 即可收藏'
+    emptyHint: '在附近美食或详情页点击收藏即可'
   },
   dislike: {
     title: '不喜欢的餐厅',
     emptyTitle: '还没有标记不喜欢的餐厅',
-    emptyHint: '在餐厅详情页点击 👎 即可加入'
+    emptyHint: '在餐厅详情页可将餐厅加入不喜欢列表'
   }
 }

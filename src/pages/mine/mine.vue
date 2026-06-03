@@ -54,30 +54,33 @@
     <view class="card menu-card">
       <text class="card-title">我的列表</text>
       <view class="menu-item" @tap="goList('favorite')">
-        <text class="menu-label">⭐ 我的收藏</text>
+        <view class="menu-label-row">
+          <uni-icons type="star" size="18" color="#1a1a1a" />
+          <text class="menu-label">我的收藏</text>
+        </view>
         <view class="menu-right">
           <text v-if="favoriteCount" class="menu-count">{{ favoriteCount }}</text>
-          <text class="menu-arrow">›</text>
+          <uni-icons type="right" size="16" color="#cccccc" />
         </view>
       </view>
       <view class="menu-item" @tap="goList('dislike')">
-        <text class="menu-label">👎 不喜欢的餐厅</text>
+        <view class="menu-label-row">
+          <uni-icons type="hand-down" size="18" color="#1a1a1a" />
+          <text class="menu-label">不喜欢的餐厅</text>
+        </view>
         <view class="menu-right">
           <text v-if="dislikeCount" class="menu-count">{{ dislikeCount }}</text>
-          <text class="menu-arrow">›</text>
+          <uni-icons type="right" size="16" color="#cccccc" />
         </view>
       </view>
       <text class="menu-hint">点击进入管理、批量或单条删除</text>
     </view>
-
-    <view v-if="cloudBlock" class="tip tip--warn">{{ cloudBlock }}</view>
-    <view v-else class="tip">收藏与不喜欢列表已同步至云端，换设备登录后仍可使用</view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { getCloudBlockReason } from '@/services/cloud'
 import {
   fetchUserProfile,
@@ -175,7 +178,7 @@ async function handleSave() {
   }
 }
 
-onShow(() => {
+onLoad(() => {
   loadProfile()
 })
 </script>
@@ -283,6 +286,11 @@ onShow(() => {
 .menu-item:last-of-type {
   border-bottom: none;
 }
+.menu-label-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
 .menu-label {
   font-size: 30rpx;
   color: $text-primary;
@@ -295,11 +303,6 @@ onShow(() => {
 .menu-count {
   font-size: 26rpx;
   color: $text-muted;
-}
-.menu-arrow {
-  font-size: 36rpx;
-  color: #ccc;
-  line-height: 1;
 }
 .menu-hint {
   display: block;

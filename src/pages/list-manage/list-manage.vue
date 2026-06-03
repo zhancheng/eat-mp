@@ -31,7 +31,13 @@
             :class="{ checked: selectedIds.has(item.id) }"
             @tap.stop="toggleSelect(item.id)"
           >
-            <text v-if="selectedIds.has(item.id)">✓</text>
+            <uni-icons
+              v-if="selectedIds.has(item.id)"
+              type="checkbox-filled"
+              size="18"
+              color="#FF6B35"
+            />
+            <uni-icons v-else type="circle" size="18" color="#cccccc" />
           </view>
           <image
             class="cover"
@@ -41,7 +47,10 @@
           <view class="info">
             <text class="name">{{ item.name }}</text>
             <view class="meta">
-              <text v-if="item.rating" class="rating">★ {{ item.rating }}</text>
+            <view v-if="item.rating" class="rating">
+              <uni-icons type="star-filled" size="12" color="#ff9500" />
+              <text>{{ item.rating }}</text>
+            </view>
               <text v-if="item.avgPrice">¥{{ item.avgPrice }}/人</text>
               <text v-if="item.distanceText" class="dist">{{ item.distanceText }}</text>
             </view>
@@ -201,7 +210,7 @@ async function doRemove(ids: string[]) {
 .page {
   min-height: 100vh;
   background: $page-bg;
-  padding-bottom: calc(120rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
 }
 .error-bar {
   margin: 24rpx 32rpx 0;
@@ -284,8 +293,8 @@ async function doRemove(ids: string[]) {
   color: #fff;
 }
 .checkbox.checked {
-  background: $primary;
-  border-color: $primary;
+  background: transparent;
+  border-color: transparent;
 }
 .cover {
   width: 120rpx;
@@ -316,6 +325,9 @@ async function doRemove(ids: string[]) {
   margin-bottom: 6rpx;
 }
 .rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
   color: #ff9500;
 }
 .dist {

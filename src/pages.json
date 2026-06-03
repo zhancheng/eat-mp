@@ -1,7 +1,9 @@
 {
   "easycom": {
     "autoscan": true,
-    "custom": {}
+    "custom": {
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+    }
   },
   "pages": [
     {
@@ -19,6 +21,12 @@
       }
     },
     {
+      "path": "pages/wheel-pick/wheel-pick",
+      "style": {
+        "navigationBarTitleText": "选择餐厅"
+      }
+    },
+    {
       "path": "pages/detail/detail",
       "style": {
         "navigationBarTitleText": "餐厅详情"
@@ -28,6 +36,12 @@
       "path": "pages/mine/mine",
       "style": {
         "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/wheel-challenge/wheel-challenge",
+      "style": {
+        "navigationBarTitleText": "饭局轮盘 PK"
       }
     },
     {

@@ -2,7 +2,7 @@
   <view class="page">
     <view class="header">
       <view class="location-row" @tap="onRelocateTap">
-        <text class="loc-icon">📍</text>
+        <uni-icons class="loc-icon" type="location-filled" size="16" color="#ffffff" />
         <text class="loc-text">{{ locationText }}</text>
         <text class="refresh" @tap.stop="onRefreshTap">刷新</text>
       </view>
@@ -43,7 +43,10 @@
       </picker>
       <text class="count">{{ countText }}</text>
       <text v-if="favoriteCount" class="fav-count">收藏 {{ favoriteCount }}</text>
-      <view class="wheel-entry" @tap="goWheel">🎡 转盘</view>
+      <view class="wheel-entry" @tap="goWheel">
+        <uni-icons type="loop" size="16" color="#FF6B35" />
+        <text>转盘</text>
+      </view>
     </view>
 
     <view v-if="errorMsg" class="error-bar">
@@ -434,6 +437,9 @@ function goWheel() {
   margin-right: 16rpx;
 }
 .wheel-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
   font-size: 26rpx;
   color: $primary;
   font-weight: 600;

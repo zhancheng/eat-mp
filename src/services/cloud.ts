@@ -10,6 +10,11 @@ type WxAccountInfo = { miniProgram?: { appId?: string } }
 type WxCloudInstance = {
   init(options: { env?: string; traceUser?: boolean }): void
   callFunction(options: Record<string, unknown>): void
+  getTempFileURL?(options: {
+    fileList: string[]
+    success?: (res: { fileList: Array<{ fileID: string; tempFileURL?: string; status?: number }> }) => void
+    fail?: (err: UniApp.GeneralCallbackResult) => void
+  }): void
   uploadFile?(options: {
     cloudPath: string
     filePath: string
@@ -151,6 +156,54 @@ export async function runCloudDiagnostics(): Promise<CloudDiagnostic> {
 
 export async function pingCloud(): Promise<CloudResult<{ message: string }>> {
   return callCloudFunction<{ message: string }>('ping', {})
+}
+
+/** 将 cloud:// fileID 转为可跨用户展示的 HTTPS 临时链接 */
+export function getCloudTempFileURL(fileId: string): Promise<string> {
+  const raw = (fileId || '').trim()
+  if (!raw) return Promise.resolve('')
+  if (/^https?:\/\//i.test(raw)) return Promise.resolve(raw)
+  if (!raw.startsWith('cloud://')) return Promise.resolve(raw)
+
+  const block = getCloudBlockReason()
+  if (block) return Promise.reject(new Error(block))
+  if (!initCloud(true)) return Promise.reject(new Error('云开发未初始化'))
+
+  const cloud = getWx()?.cloud
+  if (!cloud?.getTempFileURL) {
+    return Promise.reject(new Error('当前环境不支持云存储临时链接'))
+  }
+
+  return new Promise((resolve, reject) => {
+    cloud.getTempFileURL!({
+      fileList: [raw],
+      success: (res) => {
+        const item = res.fileList?.[0]
+        if (item?.status === 0 && item.tempFileURL) {
+          resolve(item.tempFileURL)
+          return
+        }
+        reject(new Error('头像链接获取失败'))
+      },
+      fail: (err) => reject(new Error(err.errMsg || '头像链接获取失败'))
+    })
+  })
+}
+
+/** 解析头像地址，供 image 组件跨用户展示 */
+export async function resolveAvatarDisplayUrl(url: string): Promise<string> {
+  const raw = (url || '').trim()
+  if (!raw) return ''
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (raw.startsWith('cloud://')) {
+    try {
+      return await getCloudTempFileURL(raw)
+    } catch (e) {
+      console.warn('[cloud] resolveAvatarDisplayUrl failed', e)
+      return ''
+    }
+  }
+  return raw
 }
 
 export function callCloudFunction<T = unknown>(

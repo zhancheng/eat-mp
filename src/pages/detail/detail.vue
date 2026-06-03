@@ -122,7 +122,7 @@
             <view class="comment-main">
               <view class="comment-head">
                 <text class="comment-author">{{ c.nickName || '微信用户' }}</text>
-                <text v-if="c.rating" class="comment-stars">{{ starText(c.rating) }}</text>
+                <star-rating v-if="c.rating" :rating="c.rating" size="12" />
               </view>
               <text class="comment-body">{{ c.content }}</text>
             </view>
@@ -139,21 +139,28 @@
       </view>
       <view class="dock-actions">
         <view class="dock-action" @tap.stop="openPlatform">
-          <text class="dock-action-icon dock-action-icon--map">📍</text>
-          <text class="dock-action-num">高德</text>
+          <uni-icons type="location" size="22" color="#1a1a1z" />
         </view>
         <view class="dock-action" :class="{ active: favorited }" @tap.stop="toggleFavoriteState">
-          <text class="dock-action-icon">{{ favorited ? '★' : '☆' }}</text>
+          <uni-icons
+            :type="favorited ? 'star-filled' : 'star'"
+            size="22"
+            :color="favorited ? '#ff9500' : '#1a1a1z'"
+          />
         </view>
         <view
           class="dock-action dock-action--dislike"
           :class="{ active: disliked }"
           @tap.stop="toggleDislikeState"
         >
-          <text class="dock-action-icon">👎</text>
+          <uni-icons
+            :type="disliked ? 'hand-down-filled' : 'hand-down'"
+            size="22"
+            :color="disliked ? '#666666' : '#1a1a1z'"
+          />
         </view>
         <view class="dock-action" @tap.stop="scrollToComments">
-          <text class="dock-action-icon">💬</text>
+          <uni-icons type="chatbubble" size="22" color="#1a1a1z" />
           <text v-if="commentCount > 0" class="dock-action-num">{{ commentCount }}</text>
         </view>
       </view>
@@ -168,15 +175,13 @@
           <text class="sheet-title">写评价</text>
           <text class="sheet-send" @tap="submitComment">发送</text>
         </view>
-        <view class="star-picker sheet-stars">
-          <text
-            v-for="n in 5"
-            :key="n"
-            class="star-opt"
-            :class="{ on: n <= commentRating }"
-            @tap="commentRating = n"
-          >★</text>
-        </view>
+        <star-rating
+          class="sheet-stars"
+          :rating="commentRating"
+          :readonly="false"
+          size="24"
+          @change="commentRating = $event"
+        />
         <view class="sheet-input-row">
           <textarea
             v-model="commentDraft"
@@ -339,10 +344,6 @@ onLoad(() => {
     loadComments()
   }
 })
-
-function starText(rating: number): string {
-  return '★'.repeat(rating) + '☆'.repeat(5 - rating)
-}
 
 async function loadComments() {
   if (!item.value?.id) return
@@ -783,26 +784,10 @@ function openPlatform() {
   font-weight: 600;
   color: $text-primary;
 }
-.comment-stars {
-  font-size: 22rpx;
-  color: #ff9500;
-  letter-spacing: 2rpx;
-}
 .comment-body {
   font-size: 26rpx;
   color: $text-secondary;
   line-height: 1.5;
-}
-.star-picker {
-  display: flex;
-  gap: 8rpx;
-}
-.star-opt {
-  font-size: 36rpx;
-  color: #ddd;
-}
-.star-opt.on {
-  color: #ff9500;
 }
 
 /* 底部固定栏 */
@@ -845,30 +830,14 @@ function openPlatform() {
 }
 .dock-action {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-width: 64rpx;
   padding: 4rpx 8rpx;
 }
-.dock-action.active .dock-action-icon {
-  color: #ff9500;
-}
-.dock-action--dislike.active .dock-action-icon {
-  color: $text-secondary;
-  opacity: 1;
-}
-.dock-action-icon {
-  font-size: 40rpx;
-  line-height: 1;
-  color: $text-primary;
-}
-.dock-action-icon--map {
-  font-size: 34rpx;
-}
 .dock-action-num {
-  font-size: 18rpx;
-  color: $text-muted;
+  font-size: 24rpx;
+  color: #1a1a1a;
   margin-top: 2rpx;
   line-height: 1.2;
 }

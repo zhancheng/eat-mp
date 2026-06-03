@@ -1,7 +1,11 @@
 <template>
   <view class="card" @tap="onTap">
     <view class="fav-btn" :class="{ active: favorited }" @tap.stop="onFavoriteTap">
-      <text class="fav-icon">{{ favorited ? '★' : '☆' }}</text>
+      <uni-icons
+        :type="favorited ? 'star-filled' : 'star'"
+        size="18"
+        :color="favorited ? '#ff9500' : '#ccc'"
+      />
     </view>
     <image
       class="cover"
@@ -15,7 +19,10 @@
         <platform-tag :platform="item.platform" size="small" />
       </view>
       <view class="meta">
-        <text class="rating">★ {{ item.rating }}</text>
+        <view class="rating">
+          <uni-icons type="star-filled" size="12" color="#ff9500" />
+          <text>{{ item.rating }}</text>
+        </view>
         <text class="sep">|</text>
         <text>¥{{ item.avgPrice }}/人</text>
       </view>
@@ -81,14 +88,6 @@ function onFavoriteTap() {
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.12);
 }
-.fav-icon {
-  font-size: 32rpx;
-  color: #ccc;
-  line-height: 1;
-}
-.fav-btn.active .fav-icon {
-  color: #ff9500;
-}
 .cover {
   width: 210rpx;
   height: 210rpx;
@@ -116,11 +115,16 @@ function onFavoriteTap() {
   white-space: nowrap;
 }
 .meta {
+  display: flex;
+  align-items: center;
   font-size: 24rpx;
   color: $text-secondary;
   margin-bottom: 8rpx;
 }
 .rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
   color: #ff9500;
   font-weight: 500;
 }
